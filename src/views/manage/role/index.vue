@@ -117,7 +117,7 @@
 </template>
 
 <script setup name="Role">
-import { listRole, getRole, delRole, addRole, updateRole } from "@/api/manage /role";
+import { listRole, getRole, delRole, addRole, updateRole } from "@/api/manage /role.js";
 
 const { proxy } = getCurrentInstance();
 

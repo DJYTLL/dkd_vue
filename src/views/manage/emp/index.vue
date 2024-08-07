@@ -158,7 +158,7 @@
 </template>
 
 <script setup name="Emp">
-import { listEmp, getEmp, delEmp, addEmp, updateEmp } from "@/api/manage /emp";
+import { listEmp, getEmp, delEmp, addEmp, updateEmp } from "@/api/manage /emp.js";
 
 const { proxy } = getCurrentInstance();
 const { emp_status } = proxy.useDict('emp_status');
