@@ -56,7 +56,7 @@
           plain
           icon="Plus"
           @click="handleAdd"
-          v-hasPermi="['manage :emp:add']"
+          v-hasPermi="['manage:emp:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -66,7 +66,7 @@
           icon="Edit"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['manage :emp:edit']"
+          v-hasPermi="['manage:emp:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -76,7 +76,7 @@
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['manage :emp:remove']"
+          v-hasPermi="['manage:emp:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -85,7 +85,7 @@
           plain
           icon="Download"
           @click="handleExport"
-          v-hasPermi="['manage :emp:export']"
+          v-hasPermi="['manage:emp:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -105,8 +105,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manage :emp:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manage :emp:remove']">删除</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manage:emp:edit']">修改</el-button>
+          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manage:emp:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -158,7 +158,7 @@
 </template>
 
 <script setup name="Emp">
-import { listEmp, getEmp, delEmp, addEmp, updateEmp } from "@/api/manage /emp.js";
+import { listEmp, getEmp, delEmp, addEmp, updateEmp } from "@/api/manage/emp";
 
 const { proxy } = getCurrentInstance();
 const { emp_status } = proxy.useDict('emp_status');
@@ -311,7 +311,7 @@ function handleDelete(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('manage /emp/export', {
+  proxy.download('manage/emp/export', {
     ...queryParams.value
   }, `emp_${new Date().getTime()}.xlsx`)
 }

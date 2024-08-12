@@ -34,7 +34,7 @@
           plain
           icon="Plus"
           @click="handleAdd"
-          v-hasPermi="['manage :role:add']"
+          v-hasPermi="['manage:role:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -44,7 +44,7 @@
           icon="Edit"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['manage :role:edit']"
+          v-hasPermi="['manage:role:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -54,7 +54,7 @@
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['manage :role:remove']"
+          v-hasPermi="['manage:role:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -63,7 +63,7 @@
           plain
           icon="Download"
           @click="handleExport"
-          v-hasPermi="['manage :role:export']"
+          v-hasPermi="['manage:role:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -78,8 +78,8 @@
 " align="center" prop="roleName" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manage :role:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manage :role:remove']">删除</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manage:role:edit']">修改</el-button>
+          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manage:role:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -117,7 +117,7 @@
 </template>
 
 <script setup name="Role">
-import { listRole, getRole, delRole, addRole, updateRole } from "@/api/manage /role.js";
+import { listRole, getRole, delRole, addRole, updateRole } from "@/api/manage/role";
 
 const { proxy } = getCurrentInstance();
 
@@ -242,7 +242,7 @@ function handleDelete(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('manage /role/export', {
+  proxy.download('manage/role/export', {
     ...queryParams.value
   }, `role_${new Date().getTime()}.xlsx`)
 }
