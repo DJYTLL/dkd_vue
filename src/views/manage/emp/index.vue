@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams"  @submit.native.prevent  ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="人员名称" prop="userName">
         <el-input
           v-model="queryParams.userName"
@@ -9,40 +9,40 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="所属区域Id" prop="regionId">
-        <el-input
-          v-model="queryParams.regionId"
-          placeholder="请输入所属区域Id"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="角色id" prop="roleId">
-        <el-input
-          v-model="queryParams.roleId"
-          placeholder="请输入角色id"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="角色编号" prop="roleCode">
-        <el-input
-          v-model="queryParams.roleCode"
-          placeholder="请输入角色编号"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="是否启用" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择是否启用" clearable>
-          <el-option
-            v-for="dict in emp_status"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item label="所属区域Id" prop="regionId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.regionId"-->
+<!--          placeholder="请输入所属区域Id"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="角色id" prop="roleId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.roleId"-->
+<!--          placeholder="请输入角色id"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="角色编号" prop="roleCode">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.roleCode"-->
+<!--          placeholder="请输入角色编号"-->
+<!--          clearable-->
+<!--          @keyup.enter="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="是否启用" prop="status">-->
+<!--        <el-select v-model="queryParams.status" placeholder="请选择是否启用" clearable>-->
+<!--          <el-option-->
+<!--            v-for="dict in emp_status"-->
+<!--            :key="dict.value"-->
+<!--            :label="dict.label"-->
+<!--            :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -93,7 +93,7 @@
 
     <el-table v-loading="loading" :data="empList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
+      <el-table-column label="序号" type="index" width="50" align="center" />
       <el-table-column label="人员名称" align="center" prop="userName" />
       <el-table-column label="归属区 " align="center" prop="regionName" />
       <el-table-column label="角色名称" align="center" prop="roleName" />
@@ -105,8 +105,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manage:emp:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manage:emp:remove']">删除</el-button>
+          <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:emp:edit']">修改</el-button>
+          <el-button link type="primary"  @click="handleDelete(scope.row)" v-hasPermi="['manage:emp:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -125,14 +125,36 @@
         <el-form-item label="人员名称" prop="userName">
           <el-input v-model="form.userName" placeholder="请输入人员名称" />
         </el-form-item>
-        <el-form-item label="所属区域Id" prop="regionId">
-          <el-input v-model="form.regionId" placeholder="请输入所属区域Id" />
-        </el-form-item>
-        <el-form-item label="角色id" prop="roleId">
-          <el-input v-model="form.roleId" placeholder="请输入角色id" />
+<!--        角色下拉框  -->
+        <el-form-item label="角色" prop="roleId">
+          <el-select v-model="form.roleId" placeholder="请选择角色" clearable>
+            <el-option
+              v-for="item in roleList"
+              :key="item.roleId"
+              :label="item.roleName"
+              :value="item.roleId"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="联系电话" prop="mobile">
           <el-input v-model="form.mobile" placeholder="请输入联系电话" />
+        </el-form-item>
+<!--        当所选择的有角色id时显示创建时间，不可修改-->
+        <el-form-item label="创建时间" prop="createTime" v-if="form.id!=null">
+          {{ form.createTime }}
+        </el-form-item>
+
+
+<!--        区域下拉框-->
+        <el-form-item label="所属区域" prop="regionId">
+          <el-select v-model="form.regionId" placeholder="请选择所属区域" clearable>
+            <el-option
+              v-for="item in regionList"
+              :key="item.regionId"
+              :label="item.regionName"
+              :value="item.id"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="员工头像" prop="image">
           <image-upload v-model="form.image"/>
@@ -159,6 +181,10 @@
 
 <script setup name="Emp">
 import { listEmp, getEmp, delEmp, addEmp, updateEmp } from "@/api/manage/emp";
+//引入获取角色列表的api
+import { listRole } from "@/api/manage/role";
+// 引入获取区域列表的api
+import { listRegion } from "@/api/manage/region";
 
 const { proxy } = getCurrentInstance();
 const { emp_status } = proxy.useDict('emp_status');
@@ -315,6 +341,36 @@ function handleExport() {
     ...queryParams.value
   }, `emp_${new Date().getTime()}.xlsx`)
 }
+/* 获取角色列表参数设置*/
+const roleList = ref([]);
+const roleQueryParams = ref({
+  pageNum: 1,
+  pageSize: 100,
+});
+/** 获取角色列表 */
+function getRoleList() {
+  listRole(roleQueryParams.value).then(response => {
+    roleList.value = response.rows;
+  });
+}
+
+/*获取区域列表的参数设置*/
+const regionList = ref([]);
+const regionQueryParams = ref({
+  pageNum: 1,
+  pageSize: 100,
+});
+/** 获取区域列表 */
+function getRegionList() {
+  listRegion(regionQueryParams.value).then(response => {
+    regionList.value = response.rows;
+  });
+}
+
+
+
 
 getList();
+getRoleList();
+getRegionList();
 </script>
