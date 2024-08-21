@@ -87,7 +87,7 @@
       <el-table-column label="详细地址" align="center" prop="address" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:node:edit']">查看详情</el-button>
+          <el-button link type="primary" @click="handleVmList(scope.row)" v-hasPermi="['manage:vm:list']">查看详情</el-button>
           <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:node:edit']">修改</el-button>
           <el-button link type="primary"  @click="handleDelete(scope.row)" v-hasPermi="['manage:node:remove']">删除</el-button>
         </template>
@@ -149,6 +149,43 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog title="点位详情" v-model="nodeDetailOpen" width="600px" >
+<!--el-table显示点位下的设备详情-->
+
+      <el-table :data="vmForm" style="width: 100%">
+        <el-table-column  label="序号" width="50" type="index" align="center" />
+<!--        设备编号-->
+        <el-table-column prop="innerCode" label="设备编号" width="180" align="center"  />
+<!--        设备状态  根据vm_status 显示 label-->
+
+        <el-table-column prop="vmStatus" label="设备状态" width="80" align="center" >
+          <template #default="scope">
+<!--            根据vmStatus的值  从vm_status中遍历出label-->
+            <dict-tag :options="vm_status" :value="scope.row.vmStatus"/>
+          </template>
+        </el-table-column>
+<!--        最后一次供货时间  时间格式为 年-月-日  时:分:秒-->
+        <el-table-column
+            prop="lastSupplyTime"
+            label="最后一次供货时间"
+            width="220"
+            align="center">
+          <template #default="scope">
+            {{ parseTime(scope.row.lastSupplyTime, "{y}-{m}-{d}  {h}:{i}:{s}") }}
+          </template>
+        </el-table-column>
+
+
+      </el-table>
+
+
+
+    </el-dialog>
+
+
+
+
   </div>
 </template>
 
@@ -158,6 +195,9 @@ import { listNode, getNode, delNode, addNode, updateNode } from "@/api/manage/no
 import { listRegion } from "@/api/manage/region";
 //引入查询合作商列表方法
 import { listPartner } from "@/api/manage/partner";
+//引入Vm列表方法
+import {listVm} from "@/api/manage/vm.js";
+import {parseTime} from "../../../utils/ruoyi.js";
 
 
 const { proxy } = getCurrentInstance();
@@ -174,6 +214,7 @@ const total = ref(0);
 const title = ref("");
 
 const data = reactive({
+
   form: {},
   queryParams: {
     pageNum: 1,
@@ -202,7 +243,7 @@ const data = reactive({
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form , rules } = toRefs(data);
 
 /** 查询点位管理列表 */
 function getList() {
@@ -237,6 +278,8 @@ function reset() {
   };
   proxy.resetForm("nodeRef");
 }
+
+
 
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -339,6 +382,36 @@ function getPartnerList() {
     partnerList.value = response.rows;
   });
 }
+
+const vmForm = ref([]);
+const nodeDetailOpen = ref(false)
+const dialogFormVisible = ref(false)
+
+
+
+const { vm_status } = proxy.useDict('vm_status');
+function handleVmList(row) {
+  // resetVm();
+  nodeDetailOpen.value = true;
+  console.log(vm_status)
+
+  //通过row获取nodeId
+  const nodeId = row.id;
+  // console.log(nodeId);
+  const listVmParams = ref({
+    pageNum: 1,
+    pageSize: 10000,
+    nodeId: nodeId,
+  })
+
+  //通过nodeId查询vm列表
+  listVm(listVmParams.value).then(response => {
+    vmForm.value = response.rows;
+  });
+}
+
+
+
 
 /*调取查询所有合作商方法和查询所有区域方法*/
 getRegionList()
