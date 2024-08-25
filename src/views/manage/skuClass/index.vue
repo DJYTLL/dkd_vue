@@ -227,5 +227,7 @@ function handleExport() {
   }, `skuClass_${new Date().getTime()}.xlsx`)
 }
 
+
+
 getList();
 </script>
